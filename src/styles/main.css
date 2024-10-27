@@ -1,0 +1,24 @@
+/* 这里设置的样式都是全局的，可以在这里对index.html文件中的div.app设置样式 */
+
+/* #app {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-weight: normal;
+  font-size: 20px;
+  background-color: aqua;
+} */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+ul,
+li {
+  list-style: none;
+}
+html,
+body,
+#app {
+  height: 100%;
+}

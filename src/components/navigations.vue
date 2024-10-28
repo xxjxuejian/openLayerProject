@@ -2,7 +2,6 @@
 import { useMapStore } from "@/store/mapStore";
 import { storeToRefs } from "pinia";
 import { transform } from "ol/proj";
-import {}
 
 // 仅仅是获取store，直接解构，同时保留响应式,需要.value
 // 如果是mapStore.map是不用.value的
@@ -65,19 +64,30 @@ function zoomOut() {
 
 // 定位到杭州
 function moveToHangZhou() {
-  var view = map.value.getView();
-  // 设置地图中心为杭州的坐标，即可让地图移动到杭州
-  view.setCenter(transform([120.215223, 30.256326], "EPSG:4326", "EPSG:3857"));
+  const view = map.value.getView();
+  // 设置地图中心为杭州的坐标，即可让地图移动到杭州：无动画
+  // view.setCenter(transform([120.215223, 30.256326], "EPSG:4326", "EPSG:3857"));
+  // view.setZoom(view.getZoom() + 3);
+  // map.value.render();
 
-  // 定义到杭州的同时，把地图的缩放等级也调高
-  // 过渡动画怎么加？？
-  view.setZoom(view.getZoom() + 2);
-  map.value.render();
+  // 平移动画效果
+  view.animate({
+    center: transform([120.215223, 30.256326], "EPSG:4326", "EPSG:3857"),
+    duration: 2000,
+    zoom: view.getZoom() + 3,
+  });
 }
 
 // 重置，就是重置到北京，默认参数
 const reset = () => {
-  console.log("reset");
+  const view = map.value.getView();
+
+  // 平移动画效果
+  view.animate({
+    center: transform([116.410305, 39.912943], "EPSG:4326", "EPSG:3857"),
+    duration: 2000,
+    zoom: view.getZoom() - 3,
+  });
 };
 </script>
 
@@ -98,7 +108,6 @@ const reset = () => {
 .navigate-container {
   display: flex;
   justify-content: space-between;
-  margin-top: 5px;
 
   .nav {
     background-color: #e5e5e5;

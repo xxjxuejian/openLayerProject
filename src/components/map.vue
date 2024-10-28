@@ -10,7 +10,8 @@ import { onMounted } from "vue";
 import { useMapStore } from "@/store/mapStore";
 const mapStore = useMapStore();
 
-const TIANDI_TOKEN = "ade57801997980f3af716dc86639979e";
+const TIANDI_TOKEN = mapStore.TIANDI_TOKEN;
+// const TIANDI_TOKEN = import.meta.env.VITE_TIANDI_TOKEN;
 function initMap() {
   const map = new Map({
     target: "map",

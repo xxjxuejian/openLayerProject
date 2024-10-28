@@ -27,13 +27,17 @@
 import Draw from "ol/interaction/Draw.js";
 import { Vector as VectorSource } from "ol/source.js";
 import { Vector as VectorLayer } from "ol/layer.js";
+import { createBox, createRegularPolygon } from "ol/interaction/Draw.js";
 import { useMapStore } from "@/store/mapStore";
+import { watch } from "vue";
 const mapStore = useMapStore();
+
 let vectorSource = null;
 let vectorLayer = new VectorLayer({
   source: vectorSource,
 });
-
+// 矢量图层只需要添加一次，但是这里面直接用mapStore.map获取不到，因为还没赋值完成
+// 使用watch也不好
 console.log("inter----", mapStore.map);
 function createvectorSource() {
   if (vectorSource === null) {
@@ -56,21 +60,32 @@ function createvectorSource() {
 // );
 
 let draw = null;
+let geometryFunction;
 const handleCommand = (command) => {
-  console.log("removeInteraction---", draw);
-  //   let t = mapStore.map.removeInteraction;
-  console.log(mapStore.map.getInteractions());
-  console.log("removeInteraction---", draw);
-
   //   command :dot line circle ....
   console.log("command", command);
+  if (draw !== null) {
+    mapStore.map.getInteractions().getArray().pop();
+  }
+  addInteraction(command);
+};
+
+function addInteraction(command) {
   if (command !== "None") {
-    if (!vectorSource) {
+    if (vectorSource === null) {
       createvectorSource();
+    }
+    if (command === "Square") {
+      command = "Circle";
+      geometryFunction = createRegularPolygon(4);
+    } else if (command === "Box") {
+      command = "Circle";
+      geometryFunction = createBox();
     }
     draw = new Draw({
       source: vectorSource,
       type: command,
+      geometryFunction: geometryFunction,
     });
     mapStore.map.addInteraction(draw);
   } else {
@@ -78,7 +93,7 @@ const handleCommand = (command) => {
     vectorLayer?.setSource(vectorSource);
     console.log("none");
   }
-};
+}
 </script>
 
 <style scoped lang="scss">

@@ -20,24 +20,27 @@
         </el-dropdown-menu>
       </template>
     </el-dropdown>
+    <div>
+      <button class="modify" @click="handleIsModify">
+        {{ isModify ? "禁用编辑" : "启用编辑" }}
+      </button>
+    </div>
   </div>
 </template>
 
 <script setup>
-import Draw from "ol/interaction/Draw.js";
+import { Draw, Modify, Snap } from "ol/interaction";
 import { Vector as VectorSource } from "ol/source.js";
 import { Vector as VectorLayer } from "ol/layer.js";
 import { createBox, createRegularPolygon } from "ol/interaction/Draw.js";
 import { useMapStore } from "@/store/mapStore";
 import { ref, toRaw, watch } from "vue";
 const mapStore = useMapStore();
+
 let vectorSource = null;
 let vectorLayer = new VectorLayer({
   source: vectorSource,
 });
-// 矢量图层只需要添加一次，但是这里面直接用mapStore.map获取不到，因为还没赋值完成
-// 使用watch也不好
-console.log("inter----", mapStore.map);
 function createvectorSource() {
   if (vectorSource === null) {
     //绘制用的矢量图层
@@ -48,16 +51,6 @@ function createvectorSource() {
   }
 }
 
-// interaction组件会在mapStore.map被赋值之前就被使用，所以是null,不能直接// mapStore.map.addLayer(vectorLayer);
-// 但是这样的话，每次map变化就都会执行了，这也不是我想要的
-// watch(
-//   () => mapStore.map,
-//   () => {
-//     console.log("添加绘制的矢量图层");
-//     mapStore.map.addLayer(vectorLayer);
-//   }
-// );
-
 let draw = null;
 const handleCommand = (command) => {
   //   command :dot line circle ....
@@ -65,6 +58,7 @@ const handleCommand = (command) => {
   // 每次只能先这样做，在删除，直接删，删不掉
   let map = toRaw(mapStore.map);
   console.log(map.removeInteraction(draw));
+  // map.removeInteraction()
   addInteraction(command);
 };
 
@@ -94,15 +88,33 @@ function addInteraction(command) {
     console.log("none");
   }
 }
+
+// 编辑相关
+const isModify = ref(false);
+const handleIsModify = () => {
+  isModify.value = !isModify.value;
+  const modify = new Modify({ source: vectorSource });
+  mapStore.map.addInteraction(modify);
+  // 怎么禁用编辑呢？
+};
+
+function addSnap() {
+  const snap = new Snap({ source: vectorSource });
+  mapStore.map.addInteraction(snap);
+}
 </script>
 
 <style scoped lang="scss">
 .draw {
   margin-top: 5px;
-  height: 30px;
+  height: 50px;
   display: flex;
   justify-content: space-evenly;
   align-items: center;
   background-color: antiquewhite;
+
+  .modify {
+    padding: 3px 5px;
+  }
 }
 </style>

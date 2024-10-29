@@ -3,6 +3,7 @@ import Map from "./components/map.vue";
 import Navigations from "./components/navigations.vue";
 import ChangeLayer from "./components/changeLayer.vue";
 import Interaction from "./components/interaction.vue";
+import DrawAndModify from "./components/DrawAndModify.vue";
 </script>
 
 <template>
@@ -14,7 +15,8 @@ import Interaction from "./components/interaction.vue";
       <div class="left">
         <Navigations></Navigations>
         <ChangeLayer></ChangeLayer>
-        <Interaction></Interaction>
+        <!-- <Interaction></Interaction> -->
+        <DrawAndModify></DrawAndModify>
       </div>
       <div class="right">
         <Map></Map>

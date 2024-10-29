@@ -29,7 +29,7 @@ import { Vector as VectorSource } from "ol/source.js";
 import { Vector as VectorLayer } from "ol/layer.js";
 import { createBox, createRegularPolygon } from "ol/interaction/Draw.js";
 import { useMapStore } from "@/store/mapStore";
-import { watch } from "vue";
+import { toRaw, watch } from "vue";
 const mapStore = useMapStore();
 
 let vectorSource = null;
@@ -60,17 +60,18 @@ function createvectorSource() {
 // );
 
 let draw = null;
-let geometryFunction;
 const handleCommand = (command) => {
   //   command :dot line circle ....
   console.log("command", command);
-  if (draw !== null) {
-    mapStore.map.getInteractions().getArray().pop();
-  }
+  // 每次只能先这样做，在删除，直接删，删不掉
+  let map = toRaw(mapStore.map);
+  console.log(map.removeInteraction(draw));
   addInteraction(command);
 };
 
 function addInteraction(command) {
+  // 每次都要重置geometryFunction，所以要放在函数里面
+  let geometryFunction;
   if (command !== "None") {
     if (vectorSource === null) {
       createvectorSource();

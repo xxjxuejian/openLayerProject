@@ -36,7 +36,43 @@
     <div class="btns">
       <button class="btn" @click="saveFeatures">保存要素</button>
       <button class="btn" @click="loadFeatures">加载要素</button>
-      <button class="btn" @click="styleSettings">样式配置</button>
+      <button class="btn" @click="configureStyle">配置样式</button>
+    </div>
+    <div class="style-settings" v-if="isShowStyleSetting">
+      <el-tabs
+        v-model="activeName"
+        type="card"
+        class="demo-tabs"
+        @tab-change="handleTabChange"
+      >
+        <el-tab-pane label="点" name="point">
+          <template #default>
+            <div class="style point-style">
+              <div class="item">
+                <label for="pointRadius">点大小(radius):</label
+                ><input type="number" id="pointRadius" placeholder="5" />
+              </div>
+              <div class="item">
+                <label for="">填充颜色(color):</label>
+                <el-color-picker v-model="color" show-alpha />
+              </div>
+              <div class="item">
+                <label for="">边框颜色(color):</label>
+                <el-color-picker v-model="color" show-alpha />
+              </div>
+              <div class="item">
+                <label for="">边框粗细(width):</label>
+                <input type="number" placeholder="5" />
+              </div>
+            </div>
+          </template>
+        </el-tab-pane>
+        <el-tab-pane label="线" name="line">线样式</el-tab-pane>
+        <el-tab-pane label="面" name="polygon">面样式</el-tab-pane>
+      </el-tabs>
+      <div class="save-btn">
+        <button class="btn">保存</button>
+      </div>
     </div>
   </div>
 </template>
@@ -150,7 +186,7 @@ const resetLayer = () => {
 };
 
 // 保存矢量图形
-/* 
+/*
 在保存和读取这些features时，需要考虑坐标系问题。
 在保存时，需要将要素转换为 GeoJSON 格式，并指定源坐标系和目标坐标系。
 在加载时，需要将 GeoJSON 数据转换为要素，并指定源坐标系和目标坐标系。
@@ -228,6 +264,16 @@ const loadFeatures = () => {
     console.log("no data");
   }
 };
+
+// 配置样式
+const isShowStyleSetting = ref(false);
+const activeName = ref("point");
+const configureStyle = () => {
+  isShowStyleSetting.value = !isShowStyleSetting.value;
+};
+const handleTabChange = (value) => {
+  console.log(value);
+};
 </script>
 
 <style scoped lang="scss">
@@ -240,6 +286,7 @@ const loadFeatures = () => {
   }
 }
 .wrapper {
+  position: relative;
   margin-top: 5px;
   background-color: antiquewhite;
   .draw {
@@ -252,6 +299,25 @@ const loadFeatures = () => {
   .btns {
     display: flex;
     justify-content: center;
+  }
+
+  .style-settings {
+    position: absolute;
+    left: 100%;
+    top: -100%;
+    z-index: 10;
+    height: 300px;
+    background-color: #fff;
+
+    .save-btn {
+      display: flex;
+      justify-content: center;
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 30px;
+      background-color: aquamarine;
+    }
   }
 }
 </style>

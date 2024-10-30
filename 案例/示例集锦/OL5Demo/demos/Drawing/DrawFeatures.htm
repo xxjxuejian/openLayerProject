@@ -151,8 +151,11 @@
       typeSelect.onchange = function (e) {
         //移除绘制图形
         map.removeInteraction(draw);
+
         //添加交互绘制功能控件
         addInteraction();
+        console.log(map.getInteractions().getArray());
+        console.log(draw);
       };
       //添加交互绘制功能控件,加不加这行代码，就是初始的时候能不能直接绘制
       // addInteraction();

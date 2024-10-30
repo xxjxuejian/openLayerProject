@@ -6,11 +6,12 @@ import XYZ from "ol/source/XYZ";
 import View from "ol/View.js";
 import { transform } from "ol/proj";
 import { onMounted } from "vue";
-
 import { useMapStore } from "@/store/mapStore";
-const mapStore = useMapStore();
 
+const mapStore = useMapStore();
 const TIANDI_TOKEN = mapStore.TIANDI_TOKEN;
+
+const emits = defineEmits(["mapLoaded"]);
 // const TIANDI_TOKEN = import.meta.env.VITE_TIANDI_TOKEN;
 function initMap() {
   const map = new Map({
@@ -45,11 +46,12 @@ function initMap() {
     }),
   });
 
-  // 放到store上
+  // 放到store上,发送事件，地图初始化完成
   mapStore.setMap(map);
-
-  // console.log("map", map);
-  // console.log("map.getView", map.getView);
+  mapStore.map = map;
+  console.log("mapvue", mapStore.map);
+  console.log("collections", map.getInteractions());
+  emits("mapLoaded");
 }
 onMounted(() => {
   initMap();

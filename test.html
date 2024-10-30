@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      // 目标数组
+      const targetArray = [1, 2, 3, { name: "John" }];
+
+      // 创建 Proxy，但不传递 handler
+      const proxyArray = new Proxy(targetArray, {});
+
+      // 使用 Proxy
+      console.log(proxyArray[0]); // 输出: 1
+      console.log(proxyArray); // 输出: [1, 2, 3, 4]
+      console.log(proxyArray.at(-1)); // 输出: 4
+      //   proxyArray.
+    </script>
+  </body>
+</html>

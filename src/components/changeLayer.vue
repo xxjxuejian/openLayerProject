@@ -12,10 +12,8 @@
 <script setup>
 import { useMapStore } from "../store/mapStore";
 import { ref } from "vue";
-import { storeToRefs } from "pinia";
 
 const mapStore = useMapStore();
-const { map } = storeToRefs(mapStore);
 const radioLayer = ref("TIANDITU");
 
 const changeLayer = (value) => {
@@ -23,7 +21,7 @@ const changeLayer = (value) => {
   mapStore.removeLayers();
   let layers = mapStore.createLayer(value);
   layers.forEach((layer) => {
-    map.value.addLayer(layer);
+    mapStore.map.addLayer(layer);
   });
 };
 </script>

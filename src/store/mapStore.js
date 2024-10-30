@@ -1,20 +1,22 @@
 import { defineStore } from "pinia";
 import TileLayer from "ol/layer/Tile.js";
 import { XYZ as XYZ, OSM as OSM, BingMaps as BingMaps } from "ol/source";
-import { ref } from "vue";
+import { reactive, ref } from "vue";
 
 export const useMapStore = defineStore("map", () => {
-  const map = ref(null);
+  // let map = reactive({});
+  let map = null;
   const TIANDI_TOKEN = "ade57801997980f3af716dc86639979e";
   function setMap(instance) {
     console.log("map----");
-    map.value = instance;
+    map = instance;
+    console.log("map====", map);
   }
 
   // 切换地图就要先移除当前的底图
   function removeLayers() {
     // 移除图层，就要指出哪一个图层，所以要先获取图层,返回值是图层数组
-    const layers = map.value.getLayers().getArray();
+    const layers = map.getLayers().getArray();
     // console.log(layers); //数组
 
     // removeLayer()只是移除一个图层，所以需要对上面的数组遍历移除
@@ -25,7 +27,7 @@ export const useMapStore = defineStore("map", () => {
 
     // 倒序循环删除
     for (let i = layers.length - 1; i >= 0; i--) {
-      map.value.removeLayer(layers[i]);
+      map.removeLayer(layers[i]);
       console.log(1);
     }
   }

@@ -6,69 +6,70 @@ import { transform } from "ol/proj";
 // 仅仅是获取store，直接解构，同时保留响应式,需要.value
 // 如果是mapStore.map是不用.value的
 const mapStore = useMapStore();
-const { map } = storeToRefs(mapStore); //需要.value
+const { map } = mapStore; //需要.value
 
+console.log("---", mapStore.map);
 // 左移
 const moveToLeft = () => {
-  const view = map.value.getView();
+  const view = map.getView();
   // console.log(view);
 
   let mapCenter = view.getCenter();
   // console.log("mapCenter", mapCenter); [0,0]：center
   mapCenter[0] += 50000;
   view.setCenter(mapCenter);
-  map.value.render();
+  map.render();
 };
 
 const moveToRight = () => {
-  const view = map.value.getView();
+  const view = map.getView();
   let mapCenter = view.getCenter();
   view.setCenter(mapCenter);
   mapCenter[0] -= 50000;
-  map.value.render();
+  map.render();
 };
 
 // 向上移动地图
 function moveToUp() {
-  const view = map.value.getView();
+  const view = map.getView();
   const mapCenter = view.getCenter();
   // 让地图中心的y值减少，即可使得地图向上移动，减少的值根据效果可自由设定
   mapCenter[1] -= 50000;
   view.setCenter(mapCenter);
-  map.value.render();
+  map.render();
 }
 
 // 下移
 function moveToDown() {
-  const view = map.value.getView();
+  const view = map.getView();
   const mapCenter = view.getCenter();
   // 让地图中心的y值减少，即可使得地图向上移动，减少的值根据效果可自由设定
   mapCenter[1] += 50000;
   view.setCenter(mapCenter);
-  map.value.render();
+  map.render();
 }
 
 // 放大地图
 function zoomIn() {
-  const view = map.value.getView();
+  const view = map.getView();
   // 让地图的zoom增加1，从而实现地图放大
   view.setZoom(view.getZoom() + 1);
 }
 
 // 缩小地图
 function zoomOut() {
-  const view = map.value.getView();
+  const view = map.getView();
   // 让地图的zoom减小1，从而实现地图缩小
   view.setZoom(view.getZoom() - 1);
 }
 
 // 定位到杭州
 function moveToHangZhou() {
-  const view = map.value.getView();
+  const view = map.getView();
   // 设置地图中心为杭州的坐标，即可让地图移动到杭州：无动画
   // view.setCenter(transform([120.215223, 30.256326], "EPSG:4326", "EPSG:3857"));
   // view.setZoom(view.getZoom() + 3);
-  // map.value.render();
+  // map.render();
 
   // 平移动画效果
   view.animate({
@@ -80,7 +81,7 @@ function moveToHangZhou() {
 
 // 重置，就是重置到北京，默认参数
 const reset = () => {
-  const view = map.value.getView();
+  const view = map.getView();
 
   // 平移动画效果
   view.animate({

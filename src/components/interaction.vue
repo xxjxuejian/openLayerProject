@@ -29,7 +29,8 @@ import { Vector as VectorSource } from "ol/source.js";
 import { Vector as VectorLayer } from "ol/layer.js";
 import { createBox, createRegularPolygon } from "ol/interaction/Draw.js";
 import { useMapStore } from "@/store/mapStore";
-import { watch } from "vue";
+import { watch, toRaw, reactive, ref, computed } from "vue";
+import { storeToRefs } from "pinia";
 const mapStore = useMapStore();
 
 let vectorSource = null;
@@ -59,15 +60,47 @@ function createvectorSource() {
 //   }
 // );
 
+// let draw = ref(null);  //不可以设置为响应式
 let draw = null;
 let geometryFunction;
 const handleCommand = (command) => {
+  let t = mapStore.map.getInteractions();
+  // draw = null;
+  console.log("ttt", t, draw);
+  // console.log(mapStore.map.getInteractions().array_);
   //   command :dot line circle ....
   console.log("command", command);
-  if (draw !== null) {
-    mapStore.map.getInteractions().getArray().pop();
-  }
+  // if (draw !== null) {
+  //   // mapStore.map.getInteractions().getArray().pop();
+  // let interactions = toRaw(mapStore.map.getInteractions().getArray());
+  // console.log(interactions);
+  // addInteraction(command);
+  // let curDraw = interactions.find((item) => item === draw);
+  // console.log(curDraw);
+  // let index = interactions.indexOf(curDraw);
+  // if (index !== -1) {
+  //   interactions.splice(index, 1);
+  // }
+  // }
+
   addInteraction(command);
+  // map实例需要在多个组件中共同使用，但是它本身不能变成proxy对象，不然调用内部方法会有bug
+  /* 
+    解决：1.
+    2.
+  */
+  // let map = toRaw(mapStore.map);
+  // console.log(mapStore.map.getInteractions().getArray());
+  // console.log(map.getInteractions().getArray());
+  // console.log(map.removeInteraction(draw));
+
+  // console.log("draw============", draw.value);
+  // let t = mapStore.map.getInteractions().getArray().at(-1);
+  // console.log(t);
+  // console.log(mapStore.map.removeInteraction(draw.value));
+  // // console.log("toRaw", toRaw(t) === draw);
+  // console.log("mapStore", mapStore);
+  // console.log("mapStore.map.token", mapStore.TIANDI_TOKEN);
 };
 
 function addInteraction(command) {

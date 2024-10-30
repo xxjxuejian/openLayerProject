@@ -3,6 +3,13 @@ import Map from "./components/map.vue";
 import Navigations from "./components/navigations.vue";
 import ChangeLayer from "./components/changeLayer.vue";
 import Interaction from "./components/interaction.vue";
+import { useMapStore } from "@/store/mapStore";
+import { ref } from "vue";
+const mapIsLoaded = ref(false);
+const mapStore = useMapStore();
+const handleMapLoaded = () => {
+  mapIsLoaded.value = true;
+};
 </script>
 
 <template>
@@ -12,12 +19,12 @@ import Interaction from "./components/interaction.vue";
     </div>
     <div class="content">
       <div class="left">
-        <Navigations></Navigations>
-        <ChangeLayer></ChangeLayer>
-        <Interaction></Interaction>
+        <Navigations v-if="mapIsLoaded"></Navigations>
+        <ChangeLayer v-if="mapIsLoaded"></ChangeLayer>
+        <Interaction v-if="mapIsLoaded"></Interaction>
       </div>
       <div class="right">
-        <Map></Map>
+        <Map @mapLoaded="handleMapLoaded"></Map>
       </div>
     </div>
   </div>

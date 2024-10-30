@@ -39,7 +39,7 @@ import { Vector as VectorSource } from "ol/source.js";
 import { Vector as VectorLayer } from "ol/layer.js";
 import { createBox, createRegularPolygon } from "ol/interaction/Draw.js";
 import { useMapStore } from "@/store/mapStore";
-import { ref, toRaw } from "vue";
+import { ref } from "vue";
 const mapStore = useMapStore();
 
 let vectorSource = null;
@@ -60,11 +60,7 @@ let draw = null;
 const handleCommand = (command) => {
   //   command :dot line circle ....
   console.log("command", command);
-  // 每次只能先这样做，在删除，直接删，删不掉
-  // let map = toRaw(mapStore.map);
-  // console.log(map.removeInteraction(draw));
   mapStore.deleteInteraction(draw);
-
   addInteraction(command);
 };
 
@@ -111,10 +107,6 @@ const handleIsModify = () => {
   }
   // 如果是禁用
   else {
-    // 先前的方式，也是可行的
-    // let map = toRaw(mapStore.map);
-    // console.log(map.removeInteraction(modify));
-
     // 禁用就移除编辑交互,移除绘制交互
     mapStore.deleteInteraction(draw);
     mapStore.deleteInteraction(modify);
@@ -129,11 +121,6 @@ const resetLayer = () => {
     console.log("reset layer");
   }
 };
-
-function addSnap() {
-  const snap = new Snap({ source: vectorSource });
-  mapStore.map.addInteraction(snap);
-}
 </script>
 
 <style scoped lang="scss">

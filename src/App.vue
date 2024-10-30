@@ -4,6 +4,7 @@ import Navigations from "./components/navigations.vue";
 import ChangeLayer from "./components/changeLayer.vue";
 import Interaction from "./components/interaction.vue";
 import DrawAndModify from "./components/DrawAndModify.vue";
+import SaveAndLoadGeoJson from "./components/SaveAndLoadGeoJson.vue";
 </script>
 
 <template>
@@ -17,6 +18,7 @@ import DrawAndModify from "./components/DrawAndModify.vue";
         <ChangeLayer></ChangeLayer>
         <!-- <Interaction></Interaction> -->
         <DrawAndModify></DrawAndModify>
+        <SaveAndLoadGeoJson></SaveAndLoadGeoJson>
       </div>
       <div class="right">
         <Map></Map>

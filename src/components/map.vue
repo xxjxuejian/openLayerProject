@@ -40,7 +40,8 @@ function initMap() {
     ],
     view: new View({
       center: transform([116.410305, 39.912943], "EPSG:4326", "EPSG:3857"),
-      // projection: "EPSG:3857",
+      // center: [116.410305, 39.912943],
+      // projection: "EPSG:4326", //这个决定了你整个地图后面采集和使用的坐标的坐标系
       zoom: 5,
     }),
   });

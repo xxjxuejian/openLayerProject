@@ -1,14 +1,16 @@
 import { defineStore } from "pinia";
 import TileLayer from "ol/layer/Tile.js";
 import { XYZ as XYZ, OSM as OSM, BingMaps as BingMaps } from "ol/source";
-import { ref } from "vue";
+import { ref, toRaw } from "vue";
 
 export const useMapStore = defineStore("map", () => {
   const map = ref(null);
   const TIANDI_TOKEN = "ade57801997980f3af716dc86639979e";
+  const isInitMap = ref(false);
   function setMap(instance) {
     console.log("map----");
     map.value = instance;
+    isInitMap.value = true;
   }
 
   // 切换地图就要先移除当前的底图
@@ -76,11 +78,25 @@ export const useMapStore = defineStore("map", () => {
     return layers;
   }
 
+  function deleteInteraction(interaction) {
+    // 就是删除不掉
+    // let t = map.value.removeInteraction(interaction);
+    // console.log(t);
+
+    // map是一个proxy对象，要toRaw(map.value)，而不是toRaw(map) 所以要转换成原始对象,
+    if (!interaction) return;
+    let tMap = toRaw(map.value);
+    // console.log(tMap);
+    let inter = tMap.removeInteraction(interaction);
+    console.log("移除交互", inter);
+  }
   return {
     map,
+    isInitMap,
     TIANDI_TOKEN,
     setMap,
     removeLayers,
     createLayer,
+    deleteInteraction,
   };
 });

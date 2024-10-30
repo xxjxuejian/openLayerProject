@@ -72,8 +72,8 @@ function moveToHangZhou() {
 
   // 平移动画效果
   view.animate({
-    center: transform([120.215223, 30.256326], "EPSG:4326", "EPSG:3857"),
-    // center: [120.215223, 30.256326],
+    // center: transform([120.215223, 30.256326], "EPSG:4326", "EPSG:3857"),
+    center: [120.215223, 30.256326],
     duration: 2000,
     zoom: view.getZoom() + 3,
   });
@@ -85,8 +85,8 @@ const reset = () => {
 
   // 平移动画效果
   view.animate({
-    center: transform([116.410305, 39.912943], "EPSG:4326", "EPSG:3857"),
-    // center: [116.410305, 39.912943],
+    // center: transform([116.410305, 39.912943], "EPSG:4326", "EPSG:3857"),
+    center: [116.410305, 39.912943],
     duration: 2000,
     zoom: view.getZoom() - 3,
   });

@@ -39,6 +39,9 @@
   </div>
 </template>
 
+<!--  每一个组件中使用的图层是独立的，这个组件中的图层和另外一个组件的图层互不影响
+但是这个组件中的矢量数据源，在这个组件中共享，这里修改的都是同一个矢量数据源  
+-->
 <script setup>
 import { Draw, Modify } from "ol/interaction";
 import Circle from "ol/geom/Circle.js";
@@ -50,18 +53,24 @@ import GeoJSON from "ol/format/GeoJSON.js";
 import { createBox, createRegularPolygon } from "ol/interaction/Draw.js";
 import { useMapStore } from "@/store/mapStore";
 import { ref, watch } from "vue";
-const mapStore = useMapStore();
 
+const mapStore = useMapStore();
 let vectorSource = null;
 let vectorLayer = new VectorLayer({
   source: vectorSource,
 });
+
+/*
+改变了添加图层的逻辑，不能直接mapStore.map.addLayer，因为在setup中mapStore.map此时还没初始化完成
+等到初始化完成以后自动添加一个矢量图层，用来绘制个加载矢量数据，后面就不用再添加图层了
+而是直接修改数据源
+*/
 watch(
   () => mapStore.isInitMap,
   (v) => {
     if (v) {
       mapStore.map.addLayer(vectorLayer);
-      console.log(11);
+      console.log("initialed map & added vectorLayer");
     }
   }
 );
@@ -70,8 +79,7 @@ function createvectorSource() {
     //绘制用的矢量图层
     vectorSource = new VectorSource({ wrapX: false }); //   矢量数据源
     vectorLayer.setSource(vectorSource);
-    // mapStore.map.addLayer(vectorLayer);
-    // console.log("hasVectorLayer");
+    // console.log("created vectorSource");
   }
 }
 
@@ -105,8 +113,6 @@ function addInteraction(command) {
     mapStore.map.addInteraction(draw);
   } else {
     // 选择none，应该是移除交互，而不是清空图层
-    // vectorSource = null;
-    // vectorLayer?.setSource(vectorSource);
     mapStore.deleteInteraction(draw);
     console.log("none");
   }
@@ -144,6 +150,20 @@ const resetLayer = () => {
 };
 
 // 保存矢量图形
+/* 
+在保存和读取这些features时，需要考虑坐标系问题。
+在保存时，需要将要素转换为 GeoJSON 格式，并指定源坐标系和目标坐标系。
+在加载时，需要将 GeoJSON 数据转换为要素，并指定源坐标系和目标坐标系。
+
+重要的是统一坐标行，不指定默认采用的是地图使用的坐标系。
+// 读取时，需要将 GeoJSON 数据转换为要素，并指定源坐标系和目标坐标系。
+const vectorSource = new VectorSource({
+  features: new GeoJSON().readFeatures(savedGeojsonData, {
+    dataProjection: "EPSG:4326", // GeoJSON 的目标坐标系
+    featureProjection: "EPSG:3857",
+  }),
+});
+ */
 const saveFeatures = () => {
   if (!vectorSource || vectorSource.getFeatures().length === 0) {
     ElMessage({
@@ -155,12 +175,8 @@ const saveFeatures = () => {
   // 获取所有要素,返回当前矢量源中所有的要素（features）
   const features = vectorSource.getFeatures();
   console.log("Allfeatures", features);
-  // 转为geojson格式
-  // 创建一个 GeoJSON 格式化对象，用于将要素转换为 GeoJSON 格式
-  const geojsonFormat = new GeoJSON({
-    dataProjection: "EPSG:4326", // GeoJSON 的目标坐标系
-    featureProjection: "EPSG:3857", // 源要素的坐标系
-  });
+
+  const geojsonFormat = new GeoJSON();
   // 将传入的要素数组（features）转换为 GeoJSON 格式的数据。它会生成一个包含所有要素信息的字符串，符合 GeoJSON 的规范。
   const geojsonData = geojsonFormat.writeFeatures(features);
   console.log("geojson", geojsonData);
@@ -170,61 +186,48 @@ const saveFeatures = () => {
   console.log("save succsee");
 };
 
+function createStyle() {
+  return new Style({
+    fill: new Fill({
+      color: "rgba(255, 0, 255, 0.6)",
+    }),
+    stroke: new Stroke({
+      color: "rgba(0, 0, 0, 0.8)",
+      width: 2,
+    }),
+    image: new CircleStyle({
+      radius: 5,
+      fill: null,
+      stroke: new Stroke({ color: "red", width: 1 }),
+    }),
+  });
+}
 // 加载矢量图形
 const loadFeatures = () => {
   const savedGeojsonData = localStorage.getItem("vectorData");
   if (savedGeojsonData) {
     // 设置样式
-    const vectorStyle = new Style({
-      fill: new Fill({
-        color: "rgba(255, 0, 255, 0.6)",
-      }),
-      stroke: new Stroke({
-        color: "rgba(0, 0, 0, 0.8)",
-        width: 2,
-      }),
-      image: new CircleStyle({
-        radius: 5,
-        fill: null,
-        stroke: new Stroke({ color: "red", width: 1 }),
-      }),
-    });
+    const vectorStyle = createStyle();
 
-    // const vectorSource = new VectorSource({
-    //   features: new GeoJSON().readFeatures(savedGeojsonData, {
-    //     dataProjection: "EPSG:4326", // GeoJSON 的目标坐标系
-    //     featureProjection: "EPSG:3857",
-    //   }),
-    // });
-
-    const features = new GeoJSON().readFeatures(savedGeojsonData, {
-      dataProjection: "EPSG:4326",
-      featureProjection: "EPSG:3857", // 确保转换为地图使用的投影
-    });
+    const features = new GeoJSON().readFeatures(
+      savedGeojsonData
+      // {
+      //   dataProjection: "EPSG:4326",
+      //   featureProjection: "EPSG:3857", // 确保转换为地图使用的投影
+      // }
+    );
     if (vectorSource === null) {
       createvectorSource();
     }
-    // console.log("loadjson", new GeoJSON().readFeatures(savedGeojsonData));
+
     vectorSource.addFeatures(features);
-    // const vectorLayer = new VectorLayer({
-    //   source: vectorSource,
-    // });
     vectorLayer.setSource(vectorSource);
     vectorLayer.setStyle(vectorStyle); // 应用样式
-    // mapStore.map.addLayer(vectorLayer);
-    // if (vectorSource === null) {
-    //   createvectorSource();
-    // }
-    // vectorSource.addFeatures(features);
-    // // mapStore.map.addLayer(vectorLayer);
     console.log("vectorSource", vectorSource.getFeatures());
-    // // console.log("vectorLayer", vectorLayer.getSource().getFeatures());
   } else {
     console.log("no data");
   }
 };
-
-function test() {}
 </script>
 
 <style scoped lang="scss">

@@ -44,8 +44,6 @@
 -->
 <script setup>
 import { Draw, Modify } from "ol/interaction";
-import Circle from "ol/geom/Circle.js";
-import Feature from "ol/Feature.js";
 import { Vector as VectorSource } from "ol/source.js";
 import { Vector as VectorLayer } from "ol/layer.js";
 import { Style, Fill, Stroke, Circle as CircleStyle } from "ol/style.js";

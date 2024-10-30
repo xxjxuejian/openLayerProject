@@ -5,6 +5,7 @@ import ChangeLayer from "./components/changeLayer.vue";
 import Interaction from "./components/interaction.vue";
 import DrawAndModify from "./components/DrawAndModify.vue";
 import SaveAndLoadGeoJson from "./components/SaveAndLoadGeoJson.vue";
+import FeaturesStyle from "./components/FeaturesStyle.vue";
 </script>
 
 <template>
@@ -19,6 +20,7 @@ import SaveAndLoadGeoJson from "./components/SaveAndLoadGeoJson.vue";
         <!-- <Interaction></Interaction> -->
         <DrawAndModify></DrawAndModify>
         <SaveAndLoadGeoJson></SaveAndLoadGeoJson>
+        <FeaturesStyle></FeaturesStyle>
       </div>
       <div class="right">
         <Map></Map>

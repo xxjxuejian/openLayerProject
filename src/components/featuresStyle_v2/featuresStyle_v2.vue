@@ -51,14 +51,26 @@
       >
         <el-tab-pane label="点" name="point">
           <template #default>
-            <StyleInput :type="'point'"></StyleInput>
+            <StyleInput
+              :type="type"
+              v-if="type === 'point'"
+              :ref="StyleInputRefInstance"
+            ></StyleInput>
           </template>
         </el-tab-pane>
-        <el-tab-pane label="线" name="line">线样式</el-tab-pane>
-        <el-tab-pane label="面" name="polygon">面样式</el-tab-pane>
+        <el-tab-pane label="线" name="line" :type="type">
+          <template #default>
+            <StyleInput :type="type" v-if="type === 'line'"></StyleInput>
+          </template>
+        </el-tab-pane>
+        <el-tab-pane label="面" name="polygon" :type="type">
+          <template #default>
+            <StyleInput :type="type" v-if="type === 'polygon'"></StyleInput>
+          </template>
+        </el-tab-pane>
       </el-tabs>
       <div class="save-btn">
-        <button class="btn">保存</button>
+        <button class="btn" @click="handleSaveStyle">保存</button>
       </div>
     </div>
   </div>
@@ -76,6 +88,7 @@ import GeoJSON from "ol/format/GeoJSON.js";
 import { createBox, createRegularPolygon } from "ol/interaction/Draw.js";
 import { useMapStore } from "@/store/mapStore";
 import { ref, watch } from "vue";
+// import StyleInput from "./StyleInput.vue";
 import StyleInput from "./StyleInput.vue";
 
 const mapStore = useMapStore();
@@ -256,11 +269,18 @@ const loadFeatures = () => {
 // 配置样式
 const isShowStyleSetting = ref(false);
 const activeName = ref("point");
+const type = ref("point");
+const StyleInputRefInstance = ref(null);
+
 const configureStyle = () => {
   isShowStyleSetting.value = !isShowStyleSetting.value;
 };
 const handleTabChange = (value) => {
-  console.log(value);
+  type.value = value;
+};
+const handleSaveStyle = () => {
+  // StyleInputRefInstance.value.getValues();
+  console.log("aa", StyleInputRefInstance);
 };
 </script>
 
@@ -276,7 +296,7 @@ const handleTabChange = (value) => {
 .wrapper {
   position: relative;
   margin-top: 5px;
-  background-color: antiquewhite;
+  // background-color: antiquewhite;
   .draw {
     height: 50px;
     display: flex;
@@ -294,9 +314,9 @@ const handleTabChange = (value) => {
     left: 100%;
     top: -100%;
     z-index: 10;
-    height: 300px;
+    // height: 300px;
     width: 300px;
-    padding: 0 10px;
+    padding: 0 10px 35px;
     background-color: #fff;
 
     .style-settings-header {

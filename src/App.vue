@@ -5,7 +5,7 @@ import ChangeLayer from "./components/changeLayer/ChangeLayer.vue";
 import Interaction from "./components/interaction/Interaction.vue";
 import DrawAndModify from "./components/drawAndModify/DrawAndModify.vue";
 import SaveAndLoadGeoJson from "./components/saveAndLoadGeoJson/SaveAndLoadGeoJson.vue";
-import FeaturesStyle from "./components/featuresStyle/FeaturesStyle.vue";
+import FeaturesStyle from "./components/featuresStyle_v2/FeaturesStyle_v2.vue";
 </script>
 
 <template>

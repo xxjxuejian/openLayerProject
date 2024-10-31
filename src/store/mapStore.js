@@ -12,6 +12,9 @@ export const useMapStore = defineStore("map", () => {
     map.value = instance;
     isInitMap.value = true;
   }
+  let pointStyle;
+  let lineStyle;
+  let polygonStyle;
 
   // 切换地图就要先移除当前的底图
   function removeLayers() {

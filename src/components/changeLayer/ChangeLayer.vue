@@ -10,7 +10,7 @@
 </template>
 
 <script setup>
-import { useMapStore } from "../store/mapStore";
+import { useMapStore } from "@/store/mapStore";
 import { ref } from "vue";
 import { storeToRefs } from "pinia";
 

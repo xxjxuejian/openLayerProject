@@ -39,32 +39,19 @@
       <button class="btn" @click="configureStyle">配置样式</button>
     </div>
     <div class="style-settings" v-if="isShowStyleSetting">
+      <div class="style-settings-header">
+        <p>样式配置</p>
+        <div class="quit">X</div>
+      </div>
       <el-tabs
         v-model="activeName"
-        type="card"
+        type="border-card"
         class="demo-tabs"
         @tab-change="handleTabChange"
       >
         <el-tab-pane label="点" name="point">
           <template #default>
-            <div class="style point-style">
-              <div class="item">
-                <label for="pointRadius">点大小(radius):</label
-                ><input type="number" id="pointRadius" placeholder="5" />
-              </div>
-              <div class="item">
-                <label for="">填充颜色(color):</label>
-                <el-color-picker v-model="color" show-alpha />
-              </div>
-              <div class="item">
-                <label for="">边框颜色(color):</label>
-                <el-color-picker v-model="color" show-alpha />
-              </div>
-              <div class="item">
-                <label for="">边框粗细(width):</label>
-                <input type="number" placeholder="5" />
-              </div>
-            </div>
+            <StyleInput :type="'line'"></StyleInput>
           </template>
         </el-tab-pane>
         <el-tab-pane label="线" name="line">线样式</el-tab-pane>
@@ -89,6 +76,7 @@ import GeoJSON from "ol/format/GeoJSON.js";
 import { createBox, createRegularPolygon } from "ol/interaction/Draw.js";
 import { useMapStore } from "@/store/mapStore";
 import { ref, watch } from "vue";
+import StyleInput from "./StyleInput.vue";
 
 const mapStore = useMapStore();
 let vectorSource = null;
@@ -307,16 +295,37 @@ const handleTabChange = (value) => {
     top: -100%;
     z-index: 10;
     height: 300px;
+    width: 300px;
+    padding: 0 10px;
     background-color: #fff;
+
+    .style-settings-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 40px;
+
+      .quit {
+        cursor: pointer;
+      }
+    }
+
+    :deep(.el-tabs__nav) {
+      width: 100%;
+
+      .el-tabs__item {
+        flex: 1;
+      }
+    }
 
     .save-btn {
       display: flex;
       justify-content: center;
       position: absolute;
       bottom: 0;
-      width: 100%;
+      left: 0;
+      right: 0;
       height: 30px;
-      background-color: aquamarine;
     }
   }
 }

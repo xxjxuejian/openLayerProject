@@ -1,11 +1,11 @@
 <script setup>
 import Map from "./components/map.vue";
-import Navigations from "./components/navigations.vue";
-import ChangeLayer from "./components/changeLayer.vue";
-import Interaction from "./components/interaction.vue";
-import DrawAndModify from "./components/DrawAndModify.vue";
-import SaveAndLoadGeoJson from "./components/SaveAndLoadGeoJson.vue";
-import FeaturesStyle from "./components/FeaturesStyle.vue";
+import Navigations from "./components/navigation/Navigations.vue";
+import ChangeLayer from "./components/changeLayer/ChangeLayer.vue";
+import Interaction from "./components/interaction/Interaction.vue";
+import DrawAndModify from "./components/drawAndModify/DrawAndModify.vue";
+import SaveAndLoadGeoJson from "./components/saveAndLoadGeoJson/SaveAndLoadGeoJson.vue";
+import FeaturesStyle from "./components/featuresStyle/FeaturesStyle.vue";
 </script>
 
 <template>

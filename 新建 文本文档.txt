@@ -1,2 +1,2 @@
 绘制完成弹出对话框，可以重命名，可以删除绘制区域，同时还可以编辑绘制区域，然后是modifyend事件，
-draw的drawstart，drawend事件等等
+draw的drawstart，drawend事件等等，计算绘制区域面积，给出提示

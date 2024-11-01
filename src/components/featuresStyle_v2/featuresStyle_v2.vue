@@ -41,7 +41,9 @@
     <div class="style-settings" v-if="isShowStyleSetting">
       <div class="style-settings-header">
         <p>样式配置</p>
-        <div class="quit" @click="isShowStyleSetting = false">X</div>
+        <div class="quit" @click="isShowStyleSetting = false" title="关闭">
+          X
+        </div>
       </div>
       <el-tabs
         v-model="activeName"
@@ -49,28 +51,36 @@
         class="demo-tabs"
         @tab-change="handleTabChange"
       >
-        <el-tab-pane label="点" name="point">
+        <el-tab-pane label="点" name="Point">
           <template #default>
             <StyleInput
               :type="type"
-              v-if="type === 'point'"
-              :ref="StyleInputRefInstance"
+              v-if="type === 'Point'"
+              ref="StyleInputRefInstance"
             ></StyleInput>
           </template>
         </el-tab-pane>
-        <el-tab-pane label="线" name="line" :type="type">
+        <el-tab-pane label="线" name="LineString" :type="type">
           <template #default>
-            <StyleInput :type="type" v-if="type === 'line'"></StyleInput>
+            <StyleInput
+              :type="type"
+              v-if="type === 'LineString'"
+              ref="StyleInputRefInstance"
+            ></StyleInput>
           </template>
         </el-tab-pane>
-        <el-tab-pane label="面" name="polygon" :type="type">
+        <el-tab-pane label="面" name="Polygon" :type="type">
           <template #default>
-            <StyleInput :type="type" v-if="type === 'polygon'"></StyleInput>
+            <StyleInput
+              :type="type"
+              v-if="type === 'Polygon'"
+              ref="StyleInputRefInstance"
+            ></StyleInput>
           </template>
         </el-tab-pane>
       </el-tabs>
       <div class="save-btn">
-        <button class="btn" @click="handleSaveStyle">保存</button>
+        <button class="btn" @click="handleSaveStyle">应用</button>
       </div>
     </div>
   </div>
@@ -223,7 +233,11 @@ const saveFeatures = () => {
   console.log("save succsee");
 };
 
-function createStyle() {
+// 创建样式
+// 设置一个默认的样式对象,目前只针对点,线,面,三种要素
+let defaultStyle = createStyleV2();
+// 这个函数是创建一个整个图层的所有的要素的样式的,由于要针对不同要素设置不同样式,所有需要用createStyleV2的方式
+/* function createStyle() {
   return new Style({
     fill: new Fill({
       color: "rgba(255, 0, 255, 0.6)",
@@ -238,14 +252,43 @@ function createStyle() {
       stroke: new Stroke({ color: "red", width: 1 }),
     }),
   });
+} */
+
+function createStyleV2() {
+  return {
+    Point: new Style({
+      image: new CircleStyle({
+        radius: 5,
+        fill: null,
+        stroke: new Stroke({ color: "#77b8d7", width: 2 }),
+      }),
+    }),
+    LineString: new Style({
+      stroke: new Stroke({
+        color: "#77b8d7",
+        width: 2,
+      }),
+    }),
+    Polygon: new Style({
+      fill: new Fill({
+        color: "rgba(255, 255, 255, 0.5)", // 半透明
+      }),
+      stroke: new Stroke({
+        color: "#77b8d7",
+        width: 2,
+      }),
+    }),
+  };
 }
-// 加载矢量图形
+//
+/*
+加载矢量图形, 目前圆形加载不支持，要怎么修改
+这个加载是把所有的 features 加载到同一个矢量图层中，样式设置是图层设置的,vectorLayer.setStyle(vectorStyle);
+如果要针对点,线,面,设置不同的样式,就需要将他们分别渲染在不同的图层中
+ */
 const loadFeatures = () => {
   const savedGeojsonData = localStorage.getItem("vectorData");
   if (savedGeojsonData) {
-    // 设置样式
-    const vectorStyle = createStyle();
-
     const features = new GeoJSON().readFeatures(
       savedGeojsonData
       // {
@@ -256,11 +299,16 @@ const loadFeatures = () => {
     if (vectorSource === null) {
       createvectorSource();
     }
-
     vectorSource.addFeatures(features);
     vectorLayer.setSource(vectorSource);
-    vectorLayer.setStyle(vectorStyle); // 应用样式
-    console.log("vectorSource", vectorSource.getFeatures());
+    // 只执行一次
+    // vectorLayer.setStyle(vectorStyle); // 应用样式
+
+    // setStyle(fn),这个函数会在每次拖动地图都会执行 ,可能会对性能有一定影像
+    vectorLayer.setStyle((feature) => {
+      // console.log("value", feature.getGeometry().getType());
+      return defaultStyle[feature.getGeometry().getType()];
+    });
   } else {
     console.log("no data");
   }
@@ -268,20 +316,71 @@ const loadFeatures = () => {
 
 // 配置样式
 const isShowStyleSetting = ref(false);
-const activeName = ref("point");
-const type = ref("point");
+const activeName = ref("Point");
+const type = ref("Point");
 const StyleInputRefInstance = ref(null);
 
+// 控制样式配置面板的显示
 const configureStyle = () => {
   isShowStyleSetting.value = !isShowStyleSetting.value;
 };
+
+// tab切换改变type值
 const handleTabChange = (value) => {
   type.value = value;
 };
+// 保存按钮的处理逻辑
 const handleSaveStyle = () => {
-  // StyleInputRefInstance.value.getValues();
-  console.log("aa", StyleInputRefInstance);
+  const styleSettings = StyleInputRefInstance.value.getValues();
+  console.log(styleSettings);
+  applyStyleSettings(styleSettings);
 };
+
+// 应用新的样式到要素上
+function applyStyleSettings(styleSettings) {
+  let newStyle = {};
+  if (type.value === "Polygon") {
+    newStyle = {
+      Polygon: new Style({
+        fill: new Fill({
+          color: styleSettings.fillColor,
+        }),
+        stroke: new Stroke({
+          color: styleSettings.strokeColor,
+          width: styleSettings.strokeWidth,
+        }),
+      }),
+    };
+  } else if (type.value === "Point") {
+    newStyle = {
+      Point: new Style({
+        image: new CircleStyle({
+          radius: styleSettings.pointRadius,
+          fill: new Fill({ color: styleSettings.fillColor }),
+          stroke: new Stroke({
+            color: styleSettings.strokeColor,
+            width: styleSettings.strokeWidth,
+          }),
+        }),
+      }),
+    };
+  } else {
+    newStyle = {
+      LineString: new Style({
+        stroke: new Stroke({
+          color: styleSettings.strokeColor,
+          width: styleSettings.strokeWidth,
+        }),
+      }),
+    };
+  }
+
+  defaultStyle = { ...defaultStyle, ...newStyle };
+  vectorLayer.setStyle((feature) => {
+    // console.log("value", feature.getGeometry().getType());
+    return defaultStyle[feature.getGeometry().getType()];
+  });
+}
 </script>
 
 <style scoped lang="scss">

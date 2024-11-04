@@ -6,6 +6,7 @@ import Interaction from "./components/interaction/Interaction.vue";
 import DrawAndModify from "./components/drawAndModify/DrawAndModify.vue";
 import SaveAndLoadGeoJson from "./components/saveAndLoadGeoJson/SaveAndLoadGeoJson.vue";
 import FeaturesStyle from "./components/featuresStyle_v2/FeaturesStyle_v2.vue";
+import DrawEnd from "./components/drawEnd/DrawEnd.vue";
 </script>
 
 <template>
@@ -16,11 +17,12 @@ import FeaturesStyle from "./components/featuresStyle_v2/FeaturesStyle_v2.vue";
     <div class="content">
       <div class="left">
         <Navigations></Navigations>
-        <ChangeLayer></ChangeLayer>
+        <!-- <ChangeLayer></ChangeLayer> -->
         <!-- <Interaction></Interaction> -->
-        <DrawAndModify></DrawAndModify>
-        <SaveAndLoadGeoJson></SaveAndLoadGeoJson>
-        <FeaturesStyle></FeaturesStyle>
+        <!-- <DrawAndModify></DrawAndModify> -->
+        <!-- <SaveAndLoadGeoJson></SaveAndLoadGeoJson> -->
+        <!-- <FeaturesStyle></FeaturesStyle> -->
+        <DrawEnd></DrawEnd>
       </div>
       <div class="right">
         <Map></Map>

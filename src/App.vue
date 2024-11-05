@@ -6,7 +6,8 @@ import Interaction from "./components/interaction/Interaction.vue";
 import DrawAndModify from "./components/drawAndModify/DrawAndModify.vue";
 import SaveAndLoadGeoJson from "./components/saveAndLoadGeoJson/SaveAndLoadGeoJson.vue";
 import FeaturesStyle from "./components/featuresStyle_v2/FeaturesStyle_v2.vue";
-import DrawEnd from "./components/drawEnd/DrawEnd.vue";
+import DrawEndV1 from "./components/drawEnd/DrawEndV1.vue";
+import DrawEndV2 from "./components/drawEnd/DrawEndV2.vue";
 </script>
 
 <template>
@@ -22,7 +23,8 @@ import DrawEnd from "./components/drawEnd/DrawEnd.vue";
         <!-- <DrawAndModify></DrawAndModify> -->
         <!-- <SaveAndLoadGeoJson></SaveAndLoadGeoJson> -->
         <!-- <FeaturesStyle></FeaturesStyle> -->
-        <DrawEnd></DrawEnd>
+        <!-- <DrawEndV1></DrawEndV1> -->
+        <DrawEndV2></DrawEndV2>
       </div>
       <div class="right">
         <Map></Map>

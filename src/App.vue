@@ -22,7 +22,7 @@ import DrawEndV2 from "./components/drawEnd/DrawEndV2.vue";
         <!-- <Interaction></Interaction> -->
         <!-- <DrawAndModify></DrawAndModify> -->
         <!-- <SaveAndLoadGeoJson></SaveAndLoadGeoJson> -->
-        <!-- <FeaturesStyle></FeaturesStyle> -->
+        <FeaturesStyle></FeaturesStyle>
         <!-- <DrawEndV1></DrawEndV1> -->
         <DrawEndV2></DrawEndV2>
       </div>

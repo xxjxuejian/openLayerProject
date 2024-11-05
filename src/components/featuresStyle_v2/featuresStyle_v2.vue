@@ -38,8 +38,15 @@
       <button class="btn" @click="loadFeatures">加载要素</button>
       <button class="btn" @click="configureStyle">配置样式</button>
     </div>
-    <div class="style-settings" v-if="isShowStyleSetting">
-      <div class="style-settings-header">
+    <div
+      class="style-settings"
+      v-if="isShowStyleSetting"
+      :style="{
+        top: stylePannelPosition.top,
+        left: stylePannelPosition.left,
+      }"
+    >
+      <div class="style-settings-header" @mousedown="startDrag">
         <p>样式配置</p>
         <div class="quit" @click="isShowStyleSetting = false" title="关闭">
           X
@@ -381,6 +388,45 @@ function applyStyleSettings(styleSettings) {
     return defaultStyle[feature.getGeometry().getType()];
   });
 }
+
+// 样式面板拖拽
+const stylePannelIsDragging = ref(false);
+const stylePannelPosition = ref({
+  top: "0px",
+  left: "0px",
+});
+let offsetX;
+let offsetY;
+/* 
+  鼠标点击有一个位置，这个位置是距离浏览器窗口的位置
+  被点击的元素也有一个位置，两个作差，可以得到点击的位置相对于点击元素的偏移量
+*/
+const startDrag = (event) => {
+  stylePannelIsDragging.value = true;
+  // 更改偏移位置的是parent
+  const parent = event.target.parentNode;
+  // 获取当前的偏移的像素值
+  const rect = parent.getBoundingClientRect();
+  offsetX = event.clientX - rect.left;
+  offsetY = event.clientY - rect.top;
+
+  console.log("offsetX/Y", offsetX, offsetY);
+  // 添加鼠标移动和松开事件监听
+  document.addEventListener("mousemove", onDrag);
+  document.addEventListener("mouseup", stopDrag);
+};
+const onDrag = (event) => {
+  if (stylePannelIsDragging.value) {
+    console.log("move", event.clientX);
+    stylePannelPosition.value.top = event.clientY - offsetY + "px";
+    stylePannelPosition.value.left = event.clientX - offsetX + "px";
+  }
+};
+const stopDrag = () => {
+  stylePannelIsDragging.value = false;
+  document.removeEventListener("mousemove", onDrag);
+  document.removeEventListener("mouseup", startDrag);
+};
 </script>
 
 <style scoped lang="scss">
@@ -409,9 +455,7 @@ function applyStyleSettings(styleSettings) {
   }
 
   .style-settings {
-    position: absolute;
-    left: 100%;
-    top: -100%;
+    position: fixed;
     z-index: 10;
     // height: 300px;
     width: 300px;
@@ -423,6 +467,8 @@ function applyStyleSettings(styleSettings) {
       justify-content: space-between;
       align-items: center;
       height: 40px;
+      background-color: antiquewhite;
+      cursor: move;
 
       .quit {
         cursor: pointer;

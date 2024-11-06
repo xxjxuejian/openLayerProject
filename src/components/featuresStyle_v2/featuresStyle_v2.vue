@@ -45,11 +45,16 @@
         top: stylePannelPosition.top,
         left: stylePannelPosition.left,
       }"
+      ref="styleSettingsRef"
     >
       <div class="style-settings-header" @mousedown="startDrag">
         <p>样式配置</p>
-        <div class="quit" @click="isShowStyleSetting = false" title="关闭">
-          X
+        <div class="controls">
+          <el-icon @click="toggleFold" v-if="!isFold"><ArrowUpBold /></el-icon>
+          <el-icon @click="toggleFold" v-else><ArrowDownBold /></el-icon>
+          <el-icon @click="isShowStyleSetting = false" title="关闭"
+            ><CloseBold
+          /></el-icon>
         </div>
       </div>
       <el-tabs
@@ -392,14 +397,17 @@ function applyStyleSettings(styleSettings) {
 // 样式面板拖拽
 const stylePannelIsDragging = ref(false);
 const stylePannelPosition = ref({
-  top: "0px",
-  left: "0px",
+  top: "165px",
+  left: "400px",
 });
 let offsetX;
 let offsetY;
 /* 
   鼠标点击有一个位置，这个位置是距离浏览器窗口的位置
   被点击的元素也有一个位置，两个作差，可以得到点击的位置相对于点击元素的偏移量
+  要拖动的元素一开始是绝对定位，但是拖动之后就要变成固定定位了，设置top。left.是相对与窗口的，所以要修改定位方式
+  1. 一开始绝对定位，设置一个初始的top,这是面板一开始的位置，点击之后，固定定位，获取元素rect，重新设置top,,,
+  2; 一开始就是固定定位，计算好初始位置的偏移量，后续就修改top...就行
 */
 const startDrag = (event) => {
   stylePannelIsDragging.value = true;
@@ -409,7 +417,7 @@ const startDrag = (event) => {
   const rect = parent.getBoundingClientRect();
   offsetX = event.clientX - rect.left;
   offsetY = event.clientY - rect.top;
-
+  console.log(rect.left, rect.top);
   console.log("offsetX/Y", offsetX, offsetY);
   // 添加鼠标移动和松开事件监听
   document.addEventListener("mousemove", onDrag);
@@ -426,6 +434,15 @@ const stopDrag = () => {
   stylePannelIsDragging.value = false;
   document.removeEventListener("mousemove", onDrag);
   document.removeEventListener("mouseup", startDrag);
+};
+
+// 样式面板的展开与折叠
+const isFold = ref(false);
+const styleSettingsRef = ref(null); //样式面板
+const toggleFold = () => {
+  // 折叠就是加上fold类
+  isFold.value = !isFold.value;
+  styleSettingsRef.value.classList.toggle("fold");
 };
 </script>
 
@@ -457,10 +474,21 @@ const stopDrag = () => {
   .style-settings {
     position: fixed;
     z-index: 10;
-    // height: 300px;
+    height: 280px;
     width: 300px;
     padding: 0 10px 35px;
-    background-color: #fff;
+    background-color: #ffffff;
+    // transition不生效，属性没有初始值，这是可能得一个原因，height需要一个初始值
+    transition: height 0.3s linear;
+    // 折叠状态
+    &.fold {
+      height: 40px;
+      overflow: hidden;
+
+      .save-btn {
+        display: none;
+      }
+    }
 
     .style-settings-header {
       display: flex;
@@ -470,8 +498,14 @@ const stopDrag = () => {
       background-color: antiquewhite;
       cursor: move;
 
-      .quit {
+      .controls {
+        display: flex;
+        align-items: center;
         cursor: pointer;
+
+        .el-icon {
+          margin-left: 5px;
+        }
       }
     }
 

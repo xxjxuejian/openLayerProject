@@ -93,6 +93,15 @@ export const useMapStore = defineStore("map", () => {
     let inter = tMap.removeInteraction(interaction);
     console.log("移除交互", inter);
   }
+
+  function deleteOverlay(overlay) {
+    if (!overlay) return;
+    let tMap = toRaw(map.value);
+
+    let ov = tMap.removeOverlay(overlay);
+    console.log("移除overlay", ov);
+  }
+
   return {
     map,
     isInitMap,
@@ -101,5 +110,6 @@ export const useMapStore = defineStore("map", () => {
     removeLayers,
     createLayer,
     deleteInteraction,
+    deleteOverlay,
   };
 });

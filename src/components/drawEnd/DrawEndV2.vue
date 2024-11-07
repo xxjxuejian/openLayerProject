@@ -101,7 +101,9 @@ function createVectorSource() {
   draw每次绘制的都不一样，所以最开始不添加，而且每次要删除之前的，绘制新的图形，所以用的是deleteInteraction
   snap吸附甚至可以一直开启
 */
+
 let draw = null;
+
 let snap = new Snap({ source: vectorSource });
 
 // 编辑相关,默认开启交互
@@ -146,7 +148,6 @@ function addInteraction(command) {
       type: command,
       geometryFunction: geometryFunction,
     });
-
     addDrawListener(draw);
     mapStore.map.addInteraction(draw);
   } else {
@@ -267,7 +268,7 @@ function updateCenterTextFeature(geometry, featureName) {
       text.setText(area); // 更新文本内容
     }
 
-    /*     
+    /*
     // 通过上面的方式修改文本内容,如果需要更新样式,就使用下面这个方法
     labelFeature.setStyle(
       new Style({
@@ -308,9 +309,78 @@ function addDrawListener(draw) {
     vectorSource.addFeature(centerPoint);
     vectorSource.addFeature(centerText);
 
+    // 获取绘制的坐标,数组嵌套数组的结构，四边形五个点，最后一个删除不删除都可以
+    let coordinates = geometry.getCoordinates()[0];
+    coordinates.pop();
+    console.log(coordinates);
+    let highestPoint = coordinates[0];
+    coordinates.forEach((coord) => {
+      if (coord[1] > highestPoint[1]) {
+        highestPoint = coord;
+      }
+    });
+    console.log("维度最高点", highestPoint);
+    // 偏移位置，避免遮挡图形点
+    highestPoint = [highestPoint[0] + 1, highestPoint[1] + 1];
+    // 在维度最高点处创建一个删除的图表，点击可以删除刚刚绘制的图形
+
+    // overlay只需要添加一次，后面只是移动位置就行了
+    if (deleteOverlay === null) {
+      deleteOverlay = createDeleteOverlayText();
+      console.log(deleteOverlay);
+      mapStore.map.addOverlay(deleteOverlay);
+    }
+    // 设置删除按钮的位置为最高点
+    deleteOverlay.setPosition(highestPoint);
+    // 添加点击事件以删除要素
+    deleteOverlay.getElement().onclick = () => {
+      vectorSource.removeFeature(feature); // 从 source 中移除要素
+      vectorSource.removeFeature(centerPoint);
+      vectorSource.removeFeature(centerText);
+      mapStore.deleteOverlay(deleteOverlay); // 从地图中删除 Overlay
+      console.log("已删除图形和删除按钮");
+    };
+
     modify.setActive(true); // 启用修改交互
     draw.setActive(false);
   });
+}
+
+let deleteOverlay = null;
+// 创建overlay文本
+function createDeleteOverlayText() {
+  // 初始化删除按钮的 Overlay
+  const deleteOverlay = new Overlay({
+    element: document.createElement("div"),
+    positioning: "center-center",
+  });
+  // 为 Overlay 设置样式和文本
+  deleteOverlay.getElement().style.cssText = `
+    padding: 4px 8px;
+    background: red;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+`;
+  deleteOverlay.getElement().innerText = "删除";
+  return deleteOverlay;
+}
+
+// modify图形的时候,需要更新删除文本的位置
+function updateDeleteOverlayTextPosition(geometry) {
+  if (!deleteOverlay) return;
+  let coordinates = geometry.getCoordinates()[0];
+  coordinates.pop();
+  let highestPoint = coordinates[0];
+  coordinates.forEach((coord) => {
+    if (coord[1] > highestPoint[1]) {
+      highestPoint = coord;
+    }
+  });
+  console.log("维度最高点", highestPoint);
+  // 偏移位置，避免遮挡图形点
+  highestPoint = [highestPoint[0] + 1, highestPoint[1] + 1];
+  deleteOverlay.setPosition(highestPoint);
 }
 
 const handleIsModify = () => {
@@ -337,6 +407,7 @@ modify.on("modifyend", (event) => {
   if (geometry.getType() === "Polygon") {
     updateCenterPointFeature(geometry, "centerPoint");
     updateCenterTextFeature(geometry, "centerTextArea");
+    updateDeleteOverlayTextPosition(geometry);
   }
 });
 
